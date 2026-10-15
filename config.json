@@ -1,0 +1,1 @@
+{"seed":13,"delta":0.05,"population":20,"initial_blocks":2,"run_budget":10000,"forced_period":10,"feasibility_weight":0.5,"unresolved_quota":0.25,"generation_blocks":500,"evolution":true}
