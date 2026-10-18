@@ -124,7 +124,14 @@ def main():
         if args.device.startswith('cuda'):
             torch.cuda.synchronize()
         cost = (time.perf_counter() - start) * 1000 / args.invocations
-    error = json.loads((out / 'development.json').read_text(encoding='utf-8'))['error']
+    correct, count = 0, 0
+    with torch.no_grad():
+        for images, labels in torch.utils.data.DataLoader(development, batch_size=128):
+            images = images.to(args.device)
+            images = images.half() if precision == 16 else images
+            correct += int((model(images).argmax(1).cpu() == labels).sum())
+            count += len(labels)
+    error = 1 - correct / count
     record = dict(architecture=args.architecture, device=args.device, objective='latency', block=args.block,
                   cost=cost, cap=args.cap_ms, budget=args.budget_ms, charge=1, error=error,
                   split='search', genotype=json.dumps(genotype))
